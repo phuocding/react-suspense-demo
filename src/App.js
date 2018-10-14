@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { createResource } from 'simple-cache-provider';
+import { withCache } from './components/withCache';
 import logo from './logo.svg';
 import './App.css';
 
