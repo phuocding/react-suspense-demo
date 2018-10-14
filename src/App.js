@@ -1,60 +1,76 @@
-import React, { Component } from 'react';
+import React, {Timeout} from 'react';
 import { createResource } from 'simple-cache-provider';
-import { withCache } from './components/withCache';
-import logo from './logo.svg';
+import { withCache } from './components/withCache'; 
 import './App.css';
 
 const sleep = ms => new Promise(r => setTimeout(() => r(), ms));
 
 const readShows = createResource(async function fetchNews() {
   await sleep(3000);
-  const res = await fetch(`http://api.tvmaze.com/search/shows?q=suits`);
+  const res = await fetch(`https://api.tvmaze.com/search/shows?q=suits`);
   return await res.json();
 });
 
 const Movies = withCache( (props) => {
 
+  const result = readShows(props.cache);
+
   return (
     <React.Fragment>
-      <div className="column is-4">
-        <div className="movie">
-          <div className="movie__left">
-            <img src />
-          </div>
-          <div className="movie__right">
-            <div className="movie__right__title">Name: </div>
-            <div className="movie__right__subtitle">Score: </div>
-            <div className="movie__right__subtitle">Status: </div>
-            <div className="movie__right__subtitle">Network: </div>
-            <a href target="_blank" className="movie__right__subtitle">Link</a>
-          </div>
-        </div>
-      </div>
+      {result &&
+          result.length &&
+            result.map(item => (
+              <div className="column is-4">
+                <div className="movie">
+                  <div className="movie__left">
+                    <img src={item.show.image ? item.show.image.original : ''} alt="Show Poster Image"/>
+                  </div>
+                  <div className="movie__right">
+                    <div className="movie__right__title">{item.show.name}</div>
+                    <div className="movie__right__subtitle">Score: {item.show.rating.average}</div>
+                    <div className="movie__right__subtitle">Status: {item.show.status}</div>
+                    <div className="movie__right__subtitle">Network: {item.show.network ? item.show.network.name : 'N/A'}</div>
+                    <a href={item.show.url} target="_blank" className="movie__right__subtitle">Link</a>
+                  </div>
+                </div>
+              </div>
+            ))
+        }
     </React.Fragment>
   )
 });
 
-class App extends Component {
+const Placeholder = ({ delayMs, fallback, children }) => {
+  return (
+    <Timeout ms={delayMs}>
+      {didExpire => {
+        return didExpire ? fallback : children;
+      }}
+    </Timeout>
+  );
+}
+
+export default class App extends React.Component {
+
   render() {
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <React.Fragment>        
+        <div className="App">
+          <header className="App-header">
+            <h1 className="App-title">React Suspense Demo</h1>
+          </header>
+
+          <div className="container">
+          <div className="columns is-multiline">
+              <Placeholder delayMs={1000} fallback={<div>Loading</div>}>
+                <Movies />
+              </Placeholder>
+            </div>
+          </div>
+        </div>
+      </React.Fragment>
     );
   }
 }
 
-export default App;
