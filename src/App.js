@@ -4,6 +4,14 @@ import { withCache } from './components/withCache';
 import logo from './logo.svg';
 import './App.css';
 
+const sleep = ms => new Promise(r => setTimeout(() => r(), ms));
+
+const readShows = createResource(async function fetchNews() {
+  await sleep(3000);
+  const res = await fetch(`http://api.tvmaze.com/search/shows?q=suits`);
+  return await res.json();
+});
+
 class App extends Component {
   render() {
     return (
