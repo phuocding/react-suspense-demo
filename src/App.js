@@ -12,6 +12,28 @@ const readShows = createResource(async function fetchNews() {
   return await res.json();
 });
 
+const Movies = withCache( (props) => {
+
+  return (
+    <React.Fragment>
+      <div className="column is-4">
+        <div className="movie">
+          <div className="movie__left">
+            <img src />
+          </div>
+          <div className="movie__right">
+            <div className="movie__right__title">Name: </div>
+            <div className="movie__right__subtitle">Score: </div>
+            <div className="movie__right__subtitle">Status: </div>
+            <div className="movie__right__subtitle">Network: </div>
+            <a href target="_blank" className="movie__right__subtitle">Link</a>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  )
+});
+
 class App extends Component {
   render() {
     return (
